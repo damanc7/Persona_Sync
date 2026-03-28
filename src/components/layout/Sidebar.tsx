@@ -8,7 +8,7 @@ const navItems = [
   { to: '/scraped', icon: Database, label: 'Imported Data' },
   { to: '/map', icon: Map, label: 'Profile Map' },
   { to: '/reverse', icon: FlipHorizontal2, label: 'Reverse Algorithm' },
-  { to: '/collaborators', icon: MessageSquare, label: 'Conversations' },
+  // { to: '/collaborators', icon: MessageSquare, label: 'Conversations' },
   { to: '/marketplace', icon: ShoppingBag, label: 'Marketplace' },
   { to: '/data-rights', icon: ShieldCheck, label: 'Data Rights' },
   { to: '/agents', icon: Plug, label: 'Agent Connections' },
