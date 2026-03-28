@@ -8,6 +8,7 @@ import { Collaborators } from '@/pages/Collaborators'
 import { Marketplace } from '@/pages/Marketplace'
 import { DataRights } from '@/pages/DataRights'
 import { ReverseAlgorithm } from '@/pages/ReverseAlgorithm'
+import { AgentConnections } from '@/pages/AgentConnections'
 
 export const router = createBrowserRouter([
   {
@@ -22,6 +23,7 @@ export const router = createBrowserRouter([
       { path: 'collaborators', element: <Collaborators /> },
       { path: 'marketplace', element: <Marketplace /> },
       { path: 'data-rights', element: <DataRights /> },
+      { path: 'agents', element: <AgentConnections /> },
     ]
   }
 ])

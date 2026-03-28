@@ -6,5 +6,10 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: { '@': '/src' }
-  }
+  },
+  server: {
+    proxy: {
+      '/api': 'http://localhost:8000',
+    },
+  },
 })

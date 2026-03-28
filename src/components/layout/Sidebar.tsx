@@ -1,6 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, User, Database, Map, Users, ShoppingBag, ShieldCheck } from 'lucide-react'
-import { LayoutDashboard, User, Database, Map, MessageSquare, ShoppingBag, FlipHorizontal2, ShieldCheck } from 'lucide-react'
+import { LayoutDashboard, User, Database, Map, MessageSquare, ShoppingBag, FlipHorizontal2, ShieldCheck, Plug } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const navItems = [
@@ -12,6 +11,7 @@ const navItems = [
   { to: '/collaborators', icon: MessageSquare, label: 'Conversations' },
   { to: '/marketplace', icon: ShoppingBag, label: 'Marketplace' },
   { to: '/data-rights', icon: ShieldCheck, label: 'Data Rights' },
+  { to: '/agents', icon: Plug, label: 'Agent Connections' },
 ]
 
 export function Sidebar() {
