@@ -14,20 +14,20 @@ const CONNECTION_INSTRUCTIONS: Record<string, { label: string; config: string }>
   claude: {
     label: '~/.claude/settings.json',
     config: JSON.stringify(
-      { mcpServers: { 'persona-sync': { type: 'http', url: MCP_URL } } },
+      { mcpServers: { 'data-daddy': { type: 'http', url: MCP_URL } } },
       null, 2
     ),
   },
   cursor: {
     label: '.cursor/mcp.json',
     config: JSON.stringify(
-      { mcpServers: { 'persona-sync': { url: MCP_URL, transport: 'streamable-http' } } },
+      { mcpServers: { 'data-daddy': { url: MCP_URL, transport: 'streamable-http' } } },
       null, 2
     ),
   },
   perplexity: {
     label: 'Perplexity Desktop → Settings → MCP Servers',
-    config: JSON.stringify({ name: 'persona-sync', url: MCP_URL, transport: 'streamable-http' }, null, 2),
+    config: JSON.stringify({ name: 'data-daddy', url: MCP_URL, transport: 'streamable-http' }, null, 2),
   },
   chatgpt: {
     label: 'ChatGPT → Connectors (coming soon)',
@@ -190,7 +190,7 @@ function ConnectModal({
                 Connect {agent.name}
               </h2>
               <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
-                Add PersonaSync to {agent.name}'s MCP configuration
+                Add DataDaddy to {agent.name}'s MCP configuration
               </p>
             </div>
             <button

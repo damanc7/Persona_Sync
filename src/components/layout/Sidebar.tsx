@@ -19,7 +19,7 @@ export function Sidebar() {
     <nav className="hidden md:flex flex-col w-56 shrink-0 border-r border-[var(--color-border-subtle)] bg-[var(--color-bg-surface)] h-full">
       <div className="h-14 flex items-center px-5 border-b border-[var(--color-border-subtle)]">
         <span className="text-sm font-bold tracking-tight text-[var(--color-text-primary)]">
-          <span className="text-[var(--color-accent-violet)]">Persona</span>Sync
+          <span className="text-[var(--color-accent-violet)]">Data</span>Daddy
         </span>
       </div>
       <div className="flex-1 py-3 px-2 space-y-0.5 overflow-y-auto">

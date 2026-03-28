@@ -151,7 +151,7 @@ Alex is a senior IC actively exploring staff-engineer or leadership tracks. Deep
 - Does not need explanations of basic programming concepts
 
 ## Data Ownership Note
-This context was self-exported from PersonaSync. Alex owns this data and chose to share it with you.`
+This context was self-exported from DataDaddy. Alex owns this data and chose to share it with you.`
 }
 
 function getClaudeContext(): string {
@@ -184,7 +184,7 @@ function getClaudeContext(): string {
   </communication_preferences>
 
   <data_provenance>
-    Self-exported from PersonaSync on ${today}.
+    Self-exported from DataDaddy on ${today}.
     Alex controls this data and chose to share it.
   </data_provenance>
 </persona_context>`
@@ -212,12 +212,12 @@ INTERACTION PREFERENCES
 - Assumes senior-level knowledge
 - Interested in AI/ML, developer productivity, OSS
 
-SOURCE: User self-exported from PersonaSync. Data is user-owned and user-controlled.`
+SOURCE: User self-exported from DataDaddy. Data is user-owned and user-controlled.`
 }
 
 function getJsonExport(): string {
   return JSON.stringify({
-    schema: 'persona-sync/v1',
+    schema: 'data-daddy/v1',
     generatedAt: new Date().toISOString(),
     subject: {
       name: 'Alex Chen',
@@ -241,7 +241,7 @@ function getJsonExport(): string {
     dataOwnership: {
       exportedBy: 'subject',
       exportedAt: new Date().toISOString(),
-      tool: 'PersonaSync',
+      tool: 'DataDaddy',
       note: 'Subject owns this data and consented to this export.',
     },
   }, null, 2)
@@ -250,7 +250,7 @@ function getJsonExport(): string {
 function getMarkdownExport(): string {
   const today = new Date().toISOString().split('T')[0]
   return `# Alex Chen — Persona Profile
-> Exported from PersonaSync on ${today}
+> Exported from DataDaddy on ${today}
 
 ## Identity
 | Field | Value |
@@ -294,7 +294,7 @@ function getMarkdownExport(): string {
 - **Assumed knowledge:** Senior engineer level
 
 ---
-*This data is self-owned and was exported by the subject via PersonaSync.*`
+*This data is self-owned and was exported by the subject via DataDaddy.*`
 }
 
 export const perceptionHandlers = [

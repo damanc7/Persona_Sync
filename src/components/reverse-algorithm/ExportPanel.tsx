@@ -32,7 +32,7 @@ function handleDownload(content: string, format: AIExportFormatId, label: string
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = `persona-sync-export-${new Date().toISOString().split('T')[0]}.${ext}`
+  a.download = `datadaddy-export-${new Date().toISOString().split('T')[0]}.${ext}`
   a.click()
   URL.revokeObjectURL(url)
   toast.success(`${label} downloaded`)
