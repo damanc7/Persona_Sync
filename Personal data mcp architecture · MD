@@ -1,0 +1,439 @@
+# Personal Data MCP Server — Hackathon Architecture
+**3-hour build · Demo scope · Two-person split**
+
+---
+
+## 1. What We're Building
+
+A **Personal Data Sovereignty System** — a self-hosted MCP server that stores your curated personal profile, paired with a React UI for data entry and profile viewing. Any AI agent can plug in via MCP and query your data with your permission.
+
+**Demo flows (must work end-to-end):**
+1. Guided onboarding form → writes to SQLite
+2. Profile viewer — reads and displays stored profile
+3. MCP agent query demo — Claude queries your MCP server live
+
+---
+
+## 2. System Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                        REACT UI                             │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────┐  │
+│  │  Onboarding  │  │   Profile    │  │   MCP Settings   │  │
+│  │    Form      │  │   Viewer     │  │  (future scope)  │  │
+│  └──────┬───────┘  └──────┬───────┘  └──────────────────┘  │
+│         │                 │                                  │
+│         └────────┬────────┘                                 │
+│                  │  REST API calls (HTTP/JSON)               │
+└──────────────────┼──────────────────────────────────────────┘
+                   │
+┌──────────────────┼──────────────────────────────────────────┐
+│           FASTAPI BACKEND / MCP SERVER                      │
+│                  │                                          │
+│  ┌───────────────▼──────────────────────────────────────┐  │
+│  │              REST API Layer                          │  │
+│  │  POST /api/profile        — write profile fields     │  │
+│  │  GET  /api/profile        — read full profile        │  │
+│  │  GET  /api/schema         — return field schema      │  │
+│  │  GET  /api/profile/{section} — read one section      │  │
+│  └───────────────┬──────────────────────────────────────┘  │
+│                  │                                          │
+│  ┌───────────────▼──────────────────────────────────────┐  │
+│  │              MCP Tool Layer  (stdio transport)       │  │
+│  │  tool: get_profile_section(section)                  │  │
+│  │  tool: get_full_profile()                            │  │
+│  │  tool: search_profile(query)                         │  │
+│  │  resource: profile://schema  (field definitions)    │  │
+│  └───────────────┬──────────────────────────────────────┘  │
+│                  │                                          │
+│  ┌───────────────▼──────────────────────────────────────┐  │
+│  │              SQLite  (profile.db)                    │  │
+│  │  tables: profile_fields, raw_imports (future)        │  │
+│  └──────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 3. Data Model
+
+### SQLite — `profile.db`
+
+#### Table: `profile_fields`
+```sql
+CREATE TABLE profile_fields (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  section     TEXT NOT NULL,   -- e.g. "identity", "professional", "preferences"
+  field_key   TEXT NOT NULL,   -- e.g. "full_name", "job_title"
+  field_value TEXT,
+  data_type   TEXT DEFAULT 'text',  -- text | list | date | number
+  source      TEXT DEFAULT 'manual', -- manual | google | facebook
+  status      TEXT DEFAULT 'approved', -- approved | pending | rejected
+  updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(section, field_key)
+);
+```
+
+#### Table: `profile_schema`
+```sql
+CREATE TABLE profile_schema (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  section      TEXT NOT NULL,
+  field_key    TEXT NOT NULL,
+  label        TEXT NOT NULL,        -- human-friendly label for UI form
+  description  TEXT,                 -- hint text shown in form
+  data_type    TEXT DEFAULT 'text',
+  required     INTEGER DEFAULT 0,
+  sort_order   INTEGER DEFAULT 0
+);
+```
+
+### Profile Sections & Fields (Hackathon Scope)
+
+| Section | Fields |
+|---|---|
+| `identity` | full_name, date_of_birth, location_city, location_country, languages |
+| `professional` | job_title, company, industry, years_experience, skills, bio |
+| `preferences` | interests, hobbies, communication_style, learning_style |
+| `goals` | short_term_goals, long_term_goals, current_focus |
+| `context` | timezone, availability, preferred_contact |
+
+---
+
+## 4. Interface Contract (Critical — Both People Must Agree)
+
+This is the exact contract between UI and MCP server. Neither side deviates from this.
+
+### REST API (UI → Backend)
+
+#### `GET /api/schema`
+Returns the full field schema so UI can dynamically build the onboarding form.
+
+**Response:**
+```json
+{
+  "sections": [
+    {
+      "section": "identity",
+      "label": "About You",
+      "fields": [
+        {
+          "field_key": "full_name",
+          "label": "Full Name",
+          "description": "Your legal or preferred name",
+          "data_type": "text",
+          "required": true,
+          "sort_order": 1
+        }
+      ]
+    }
+  ]
+}
+```
+
+#### `POST /api/profile`
+Upserts one or more profile fields.
+
+**Request body:**
+```json
+{
+  "fields": [
+    {
+      "section": "identity",
+      "field_key": "full_name",
+      "field_value": "Harish Kumar",
+      "source": "manual"
+    }
+  ]
+}
+```
+
+**Response:**
+```json
+{ "success": true, "updated": 1 }
+```
+
+#### `GET /api/profile`
+Returns the full approved profile.
+
+**Response:**
+```json
+{
+  "profile": {
+    "identity": {
+      "full_name": "Harish Kumar",
+      "location_city": "Portland"
+    },
+    "professional": {
+      "job_title": "Entrepreneur",
+      "company": "BespokeTales"
+    }
+  },
+  "last_updated": "2025-03-28T10:00:00Z"
+}
+```
+
+#### `GET /api/profile/{section}`
+Returns one section only. Same shape as above but scoped.
+
+#### `GET /api/health`
+Returns `{ "status": "ok" }` — for UI to check server is running.
+
+---
+
+### MCP Tools (Agent → MCP Server)
+
+These are the tools Claude or any agent calls via MCP (stdio transport).
+
+#### Tool: `get_profile_section`
+```json
+{
+  "name": "get_profile_section",
+  "description": "Retrieve a specific section of the user's personal profile",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "section": {
+        "type": "string",
+        "enum": ["identity", "professional", "preferences", "goals", "context"],
+        "description": "The profile section to retrieve"
+      }
+    },
+    "required": ["section"]
+  }
+}
+```
+
+**Returns:** JSON object of key-value pairs for that section.
+
+#### Tool: `get_full_profile`
+```json
+{
+  "name": "get_full_profile",
+  "description": "Retrieve the user's complete personal profile across all sections",
+  "inputSchema": {
+    "type": "object",
+    "properties": {}
+  }
+}
+```
+
+**Returns:** Full profile JSON (same shape as `GET /api/profile`).
+
+#### Tool: `search_profile`
+```json
+{
+  "name": "search_profile",
+  "description": "Search the user's profile for fields matching a keyword",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "string",
+        "description": "Keyword to search across field keys and values"
+      }
+    },
+    "required": ["query"]
+  }
+}
+```
+
+**Returns:** Array of matching `{section, field_key, field_value}` objects.
+
+#### MCP Resource: `profile://schema`
+Exposes the full field schema as an MCP resource — this is how the UI discovers what fields to show in the form.
+
+```
+URI: profile://schema
+MIME type: application/json
+Content: Same JSON as GET /api/schema
+```
+
+---
+
+## 5. Tech Stack
+
+| Layer | Tech | Why |
+|---|---|---|
+| MCP Server | Python + FastMCP | Fastest to get running, clean decorator syntax |
+| REST API | FastAPI (same process) | One server, two interfaces |
+| Storage | SQLite via `sqlite3` | Zero setup, single file |
+| UI | React + Vite | Fast dev server, your friend knows it |
+| UI Styling | Tailwind CSS | Fast to prototype |
+| HTTP Client (UI) | `fetch` (native) | No extra deps |
+| MCP Transport | stdio | Simplest for demo, works with Claude Desktop |
+
+---
+
+## 6. Folder Structure
+
+```
+personal-data-mcp/
+├── server/                   ← YOU (MCP person)
+│   ├── main.py               ← FastAPI + FastMCP server entry point
+│   ├── db.py                 ← SQLite setup, queries
+│   ├── schema_seed.py        ← Seeds profile_schema table
+│   ├── mcp_tools.py          ← MCP tool definitions
+│   ├── api_routes.py         ← REST API routes
+│   ├── profile.db            ← SQLite DB (auto-created)
+│   └── requirements.txt
+│
+├── ui/                       ← FRIEND (UI person)
+│   ├── src/
+│   │   ├── App.jsx
+│   │   ├── pages/
+│   │   │   ├── Onboarding.jsx   ← reads /api/schema, posts to /api/profile
+│   │   │   └── ProfileViewer.jsx ← reads /api/profile
+│   │   ├── components/
+│   │   │   ├── SectionForm.jsx
+│   │   │   └── ProfileCard.jsx
+│   │   └── api.js            ← all fetch calls in one place
+│   ├── package.json
+│   └── vite.config.js
+│
+└── README.md                 ← how to run both together
+```
+
+---
+
+## 7. Task Split
+
+### YOUR TASKS — MCP Server (Python)
+
+**Hour 1**
+- [ ] Set up FastAPI + FastMCP in `main.py`
+- [ ] Create `db.py` — SQLite connection, `create_tables()`, `upsert_field()`, `get_profile()`, `get_section()`
+- [ ] Run `schema_seed.py` — populate `profile_schema` table with all fields from Section 3
+- [ ] Implement REST routes: `GET /api/schema`, `GET /api/profile`, `POST /api/profile`, `GET /api/health`
+
+**Hour 2**
+- [ ] Implement MCP tools: `get_full_profile`, `get_profile_section`, `search_profile`
+- [ ] Expose `profile://schema` as MCP resource
+- [ ] Test all REST endpoints with curl / Postman
+- [ ] Enable CORS in FastAPI so UI can call it (add `CORSMiddleware`)
+
+**Hour 3**
+- [ ] Test MCP tools via MCP Inspector or Claude Desktop
+- [ ] Help friend debug any API issues
+- [ ] Seed a demo profile with real-looking data for the demo
+- [ ] Add `GET /api/profile/{section}` if time allows
+
+**Key commands:**
+```bash
+pip install fastapi fastmcp uvicorn
+uvicorn main:app --reload --port 8000
+```
+
+---
+
+### FRIEND'S TASKS — React UI
+
+**Hour 1**
+- [ ] Scaffold Vite + React + Tailwind: `npm create vite@latest ui -- --template react`
+- [ ] Create `api.js` with `getSchema()`, `getProfile()`, `saveFields()` using `fetch`
+- [ ] Build `Onboarding.jsx` — calls `GET /api/schema` on mount, renders one section at a time with a Next button
+
+**Hour 2**
+- [ ] Build `SectionForm.jsx` — renders form fields dynamically from schema (input, textarea based on data_type)
+- [ ] Wire up `POST /api/profile` on form submit
+- [ ] Build `ProfileViewer.jsx` — calls `GET /api/profile`, renders sections as cards
+
+**Hour 3**
+- [ ] Add tab navigation between Onboarding and Profile Viewer
+- [ ] Polish — loading states, success toast on save
+- [ ] Test end-to-end against the real server
+
+**Key commands:**
+```bash
+npm create vite@latest ui -- --template react
+cd ui && npm install
+npm run dev   # runs on localhost:5173
+```
+
+---
+
+## 8. Integration Points (How They Connect)
+
+### CORS — Server must allow UI origin
+Add to `main.py`:
+```python
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],  # Vite dev server
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+```
+
+### API base URL — UI hardcodes server address
+In `ui/src/api.js`:
+```javascript
+const BASE = "http://localhost:8000";
+
+export async function getSchema() {
+  const res = await fetch(`${BASE}/api/schema`);
+  return res.json();
+}
+
+export async function getProfile() {
+  const res = await fetch(`${BASE}/api/profile`);
+  return res.json();
+}
+
+export async function saveFields(fields) {
+  const res = await fetch(`${BASE}/api/profile`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ fields })
+  });
+  return res.json();
+}
+```
+
+### Health check — UI shows server status
+On app load, UI calls `GET /api/health`. If it fails, show a banner: "MCP Server offline — start server first."
+
+---
+
+## 9. Demo Script (3 minutes)
+
+1. **Open UI** → show Onboarding tab → "The form is dynamically generated by reading the MCP server's schema resource"
+2. **Fill in 3-4 fields** across Identity + Professional → hit Save
+3. **Switch to Profile Viewer** → show filled profile cards
+4. **Open Claude Desktop** (or terminal) → "Now any AI agent can plug in" → run MCP query: `get_profile_section("professional")` → show Claude reading your data
+5. **Punch line:** "You own this data. It runs on your machine. You decide what any agent can see."
+
+---
+
+## 10. What to Skip (Not Worth the 3 Hours)
+
+- Import from Google/Facebook exports — too messy, save for post-hackathon
+- Auth / API keys — demo is local, no need
+- Curation / approve-reject UI — simplify to manual entry only
+- Vector/RAG search — SQLite LIKE search is enough for demo
+- Monetization layer — concept only, not built
+
+---
+
+## 11. Startup Order
+
+```bash
+# Terminal 1 — start server first
+cd server
+pip install -r requirements.txt
+python schema_seed.py   # one time
+uvicorn main:app --reload --port 8000
+
+# Terminal 2 — start UI
+cd ui
+npm install
+npm run dev
+# Open http://localhost:5173
+```
+
+---
+
+*Built for hackathon demo. Production version adds: auth, per-agent access controls, Google Takeout parser, vector search, and monetization API.*
