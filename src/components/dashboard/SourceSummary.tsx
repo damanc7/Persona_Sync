@@ -31,7 +31,7 @@ export function SourceSummary({ sources, loading }: SourceSummaryProps) {
   return (
     <Card className="p-5">
       <h3 className="text-sm font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-4">
-        Top Data Sources
+        Profile Data Sources
       </h3>
       {loading ? (
         <div className="space-y-4">
@@ -63,7 +63,7 @@ export function SourceSummary({ sources, loading }: SourceSummaryProps) {
                   {source.riskLevel}
                 </Badge>
               </div>
-              <div className="h-1.5 w-full rounded-full bg-white/8 overflow-hidden">
+              <div className="h-1.5 w-full rounded-full bg-[var(--color-track-bg)] overflow-hidden">
                 <motion.div
                   className={`h-full rounded-full ${riskBarColor(source.riskLevel)}`}
                   initial={{ width: 0 }}

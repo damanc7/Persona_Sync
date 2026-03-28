@@ -39,14 +39,14 @@ describe('Dashboard page', () => {
   it('renders metric cards after loading', async () => {
     renderDashboard()
     await waitFor(() => {
-      expect(screen.getByText(/profile completion/i)).toBeInTheDocument()
+      expect(screen.getByText(/profile sections filled/i)).toBeInTheDocument()
     })
   })
 
-  it('renders the exposure score section', async () => {
+  it('renders the profile completeness section', async () => {
     renderDashboard()
     await waitFor(() => {
-      expect(screen.getByText(/exposure score/i)).toBeInTheDocument()
+      expect(screen.getByText(/profile completeness score/i)).toBeInTheDocument()
     })
   })
 })

@@ -1,21 +1,83 @@
 import { http, HttpResponse } from 'msw'
-import type { Collaborator, Message } from '@/types'
+import type { PersonaProfile, Message } from '@/types'
 
-const collaborators: Collaborator[] = [
-  { id: 'u1', name: 'Alex Chen', email: 'alex.chen@example.com', role: 'owner', status: 'active', avatarUrl: undefined },
-  { id: 'u2', name: 'Jordan Lee', email: 'jordan.lee@example.com', role: 'editor', status: 'active', avatarUrl: undefined },
-  { id: 'u3', name: 'Sam Rivera', email: 'sam.rivera@example.com', role: 'viewer', status: 'invited', avatarUrl: undefined },
-  { id: 'u4', name: 'Taylor Kim', email: 'taylor.kim@example.com', role: 'editor', status: 'active', avatarUrl: undefined },
+const collaborators: PersonaProfile[] = [
+  {
+    id: 'u1', name: 'You (Alex)', email: 'alex.chen@example.com', role: 'owner', status: 'active', avatarUrl: undefined,
+    tagline: 'Profile owner',
+    preferences: {},
+  },
+  {
+    id: 'joe', name: 'Joe', email: 'joe@example.com', role: 'editor', status: 'active', avatarUrl: undefined,
+    tagline: 'Backend engineer, Go & Rust, prefers minimal abstractions',
+    preferences: {
+      languages: 'Go, Rust',
+      style: 'Systems-level, explicit error handling, no magic',
+      testing: 'Table-driven tests, benchmarks first',
+      communication: 'Short and direct',
+      editor: 'Neovim',
+    },
+  },
+  {
+    id: 'harish', name: 'Harish', email: 'harish@example.com', role: 'editor', status: 'active', avatarUrl: undefined,
+    tagline: 'Full-stack dev, TypeScript & React, design-minded',
+    preferences: {
+      languages: 'TypeScript, Python',
+      style: 'Component-driven, clean APIs, strong types',
+      testing: 'Integration tests with Playwright, Vitest',
+      communication: 'Detailed with diagrams',
+      editor: 'Cursor',
+    },
+  },
+  {
+    id: 'daman', name: 'Daman', email: 'daman@example.com', role: 'editor', status: 'active', avatarUrl: undefined,
+    tagline: 'Product engineer, Rails & React, ships fast',
+    preferences: {
+      languages: 'Ruby, TypeScript',
+      style: 'Convention over configuration, ship and iterate',
+      testing: 'RSpec, happy-path first, then edge cases',
+      communication: 'Casual, emoji-friendly, voice notes',
+      editor: 'VS Code',
+    },
+  },
 ]
 
 const messages: Message[] = [
-  { id: 'm1', authorId: 'u1', authorType: 'user', content: 'I reviewed the scraped data from LinkedIn. Some entries look off.', timestamp: '2024-03-27T09:00:00Z', topic: 'scraped-data' },
-  { id: 'm2', authorId: 'u2', authorType: 'collaborator', content: 'Agreed. The skills section seems to have pulled in data from a different profile.', timestamp: '2024-03-27T09:05:00Z', topic: 'scraped-data' },
-  { id: 'm3', authorId: 'llm', authorType: 'llm', content: 'Based on the data patterns, the LinkedIn scrape may have captured connections\' profile data. I recommend reviewing items s6 and s12 manually.', timestamp: '2024-03-27T09:06:00Z', topic: 'scraped-data' },
-  { id: 'm4', authorId: 'u4', authorType: 'collaborator', content: 'Should we deny those items until we can verify?', timestamp: '2024-03-27T09:10:00Z', topic: 'scraped-data' },
-  { id: 'm5', authorId: 'u1', authorType: 'user', content: 'Yes, let\'s be conservative. Better to deny and re-approve than approve incorrect data.', timestamp: '2024-03-27T09:12:00Z', topic: 'scraped-data' },
-  { id: 'm6', authorId: 'u2', authorType: 'collaborator', content: 'Also, the data map shows Acxiom has high exposure. Should we look into opt-outs?', timestamp: '2024-03-27T10:00:00Z', topic: 'data-map' },
-  { id: 'm7', authorId: 'llm', authorType: 'llm', content: 'Acxiom offers an opt-out at optout.acxiom.com. Given the 0.91 exposure score, this is recommended. Would you like me to draft an opt-out request?', timestamp: '2024-03-27T10:01:00Z', topic: 'data-map' },
+  {
+    id: 'm1', authorId: 'u1', authorType: 'user',
+    content: 'How should we structure the API for the new profile service?',
+    timestamp: '2026-03-28T09:00:00Z', topic: 'api-design',
+  },
+  {
+    id: 'm2', authorId: 'joe', authorType: 'persona',
+    content: 'Keep it simple. A single /profile endpoint with GET and PUT. No nested resources. Use protobuf if performance matters, otherwise plain JSON. Avoid over-abstracting early.',
+    timestamp: '2026-03-28T09:02:00Z', topic: 'api-design',
+  },
+  {
+    id: 'm3', authorId: 'harish', authorType: 'persona',
+    content: 'I\'d split it into /profile/schema for field definitions and /profile/data for values. That way the UI can dynamically render forms from the schema. TypeScript types can be generated from the schema too.',
+    timestamp: '2026-03-28T09:03:00Z', topic: 'api-design',
+  },
+  {
+    id: 'm4', authorId: 'daman', authorType: 'persona',
+    content: 'Honestly, just use Rails resources. `resources :profiles` gives you CRUD for free. Ship it, see what users actually need, then optimize. Don\'t build what nobody asked for yet.',
+    timestamp: '2026-03-28T09:05:00Z', topic: 'api-design',
+  },
+  {
+    id: 'm5', authorId: 'u1', authorType: 'user',
+    content: 'What about auth? Should we use JWT or session cookies?',
+    timestamp: '2026-03-28T09:10:00Z', topic: 'auth',
+  },
+  {
+    id: 'm6', authorId: 'joe', authorType: 'persona',
+    content: 'JWT with short expiry and refresh tokens. Stateless. The server should never have to hit a session store on every request. Keep the token payload minimal \u2014 just user ID and expiry.',
+    timestamp: '2026-03-28T09:11:00Z', topic: 'auth',
+  },
+  {
+    id: 'm7', authorId: 'harish', authorType: 'persona',
+    content: 'For a profile app like this, session cookies are simpler and more secure by default (HttpOnly, SameSite). JWTs are overkill unless you need cross-service auth. I\'d start with cookies.',
+    timestamp: '2026-03-28T09:12:00Z', topic: 'auth',
+  },
 ]
 
 export const collaboratorHandlers = [
@@ -24,13 +86,15 @@ export const collaboratorHandlers = [
   ),
 
   http.post('/api/collaborators/invite', async ({ request }) => {
-    const body = await request.json() as { email: string; role: string }
-    const newCollaborator: Collaborator = {
+    const body = await request.json() as { email: string; role: string; name: string; tagline: string }
+    const newCollaborator: PersonaProfile = {
       id: `u${Date.now()}`,
-      name: body.email.split('@')[0] ?? 'Unknown',
+      name: body.name || body.email.split('@')[0] || 'Unknown',
       email: body.email,
-      role: body.role as Collaborator['role'],
+      role: body.role as PersonaProfile['role'],
       status: 'invited',
+      tagline: body.tagline || '',
+      preferences: {},
     }
     collaborators.push(newCollaborator)
     return HttpResponse.json(newCollaborator, { status: 201 })

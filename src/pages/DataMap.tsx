@@ -32,11 +32,11 @@ export function DataMap() {
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       <TopBar
-        title="Data Map"
+        title="Profile Map"
         actions={
           <button
             onClick={() => setStatsOpen(o => !o)}
-            className="text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] transition-colors px-2 py-1 rounded-md hover:bg-white/8"
+            className="text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] transition-colors px-2 py-1 rounded-md hover:bg-[var(--color-overlay-dim)]"
           >
             {statsOpen ? 'Hide' : 'Show'} Stats
           </button>
@@ -47,7 +47,7 @@ export function DataMap() {
         {/* Graph area */}
         <div className="flex-1 relative overflow-hidden">
           {isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-[#0a0a0f]">
+            <div className="absolute inset-0 flex items-center justify-center bg-[var(--color-bg-base)]">
               <div className="space-y-3 w-64">
                 <CardSkeleton />
                 <CardSkeleton />
@@ -55,14 +55,14 @@ export function DataMap() {
             </div>
           )}
           {isError && (
-            <div className="absolute inset-0 flex items-center justify-center bg-[#0a0a0f]">
+            <div className="absolute inset-0 flex items-center justify-center bg-[var(--color-bg-base)]">
               <p className="text-[var(--color-text-muted)] text-sm">Failed to load graph data.</p>
             </div>
           )}
           {data && (
             <>
               <p className="sr-only">
-                Interactive data map showing {data.nodes.length} connected data nodes and {data.links.length} relationships between platforms, brokers, and partners that hold your personal data.
+                Interactive profile map showing {data.nodes.length} connected data sources and {data.links.length} relationships that shape your personal profile.
               </p>
               <GraphCanvas
                 nodes={data.nodes}
@@ -96,7 +96,7 @@ export function DataMap() {
         )}>
           {statsOpen && data && (
             <>
-              <p className="text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide mb-4">Exposure Stats</p>
+              <p className="text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide mb-4">Profile Coverage</p>
               <ExposureStats nodes={data.nodes} />
             </>
           )}

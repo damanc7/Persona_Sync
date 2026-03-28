@@ -21,13 +21,13 @@ export function useMessages(topic?: string) {
 export function useInviteCollaborator() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (data: { email: string; role: string }) =>
+    mutationFn: (data: { email: string; role: string; name?: string; tagline?: string }) =>
       fetch('/api/collaborators/invite', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       }).then(async r => {
-        if (!r.ok) throw new Error('Failed to invite collaborator')
+        if (!r.ok) throw new Error('Failed to add profile')
         return r.json() as Promise<Collaborator>
       }),
     onSuccess: () => {

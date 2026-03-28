@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Database, ClipboardList, Gavel, UserCheck } from 'lucide-react'
+import { Database, Layers, Puzzle, UserCheck } from 'lucide-react'
 import { TopBar } from '@/components/layout/TopBar'
 import { ErrorBanner } from '@/components/ui/ErrorBanner'
 import { CardSkeleton } from '@/components/ui/Skeleton'
@@ -29,7 +29,7 @@ export function Dashboard() {
 
   return (
     <div>
-      <TopBar title="Dashboard" />
+      <TopBar title="My Profile" />
       <motion.div
         className="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-6"
         variants={containerVariants}
@@ -45,7 +45,7 @@ export function Dashboard() {
           </motion.div>
         )}
 
-        {/* Exposure Score hero */}
+        {/* Profile completeness hero */}
         <motion.section variants={sectionVariants}>
           <ExposureScoreHero score={data?.exposureScore} loading={isLoading} />
         </motion.section>
@@ -59,24 +59,24 @@ export function Dashboard() {
               <>
                 <MetricCard
                   icon={<UserCheck className="h-4 w-4" />}
-                  label="Profile Completion"
+                  label="Profile Sections Filled"
                   value={data?.profileCompletion ?? 0}
                   valueSuffix="%"
                 />
                 <MetricCard
                   icon={<Database className="h-4 w-4" />}
-                  label="Data Points"
+                  label="Preferences Stored"
                   value={data?.dataPoints ?? 0}
                 />
                 <MetricCard
-                  icon={<ClipboardList className="h-4 w-4" />}
-                  label="Pending Approvals"
+                  icon={<Layers className="h-4 w-4" />}
+                  label="Pending Reviews"
                   value={data?.pendingApprovals ?? 0}
                   trend={{ direction: 'up', percentage: 14 }}
                 />
                 <MetricCard
-                  icon={<Gavel className="h-4 w-4" />}
-                  label="Active Bids"
+                  icon={<Puzzle className="h-4 w-4" />}
+                  label="Connected Integrations"
                   value={data?.activeBids ?? 0}
                 />
               </>

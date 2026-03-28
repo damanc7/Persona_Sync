@@ -4,8 +4,8 @@ import { ClipboardCheck, Map, ShoppingBag, UserPlus } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 
 const actions = [
-  { label: 'Review Pending', icon: <ClipboardCheck className="h-4 w-4" />, path: '/scraped' },
-  { label: 'View Data Map', icon: <Map className="h-4 w-4" />, path: '/map' },
+  { label: 'Review Imports', icon: <ClipboardCheck className="h-4 w-4" />, path: '/scraped' },
+  { label: 'View Profile Map', icon: <Map className="h-4 w-4" />, path: '/map' },
   { label: 'Create Listing', icon: <ShoppingBag className="h-4 w-4" />, path: '/marketplace' },
   { label: 'Invite Collaborator', icon: <UserPlus className="h-4 w-4" />, path: '/collaborators' },
 ]

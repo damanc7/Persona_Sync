@@ -54,7 +54,7 @@ export function MetricCard({ icon, label, value, trend, loading, valuePrefix = '
     >
       <Card className="p-5 flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <div className="p-2 rounded-lg bg-white/6 text-[var(--color-text-secondary)]">
+          <div className="p-2 rounded-lg bg-[var(--color-overlay-dim)] text-[var(--color-text-secondary)]">
             {icon}
           </div>
           {trend && (

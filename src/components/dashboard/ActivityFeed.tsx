@@ -36,7 +36,7 @@ function getActivityColor(type: ActivityItem['type']): string {
     case 'profile_updated':
       return 'text-violet-400 bg-violet-500/15'
     default:
-      return 'text-[var(--color-text-secondary)] bg-white/8'
+      return 'text-[var(--color-text-secondary)] bg-[var(--color-overlay-dim)]'
   }
 }
 
@@ -83,7 +83,7 @@ export function ActivityFeed({ items, loading }: ActivityFeedProps) {
         <EmptyState
           icon={<Activity className="h-8 w-8" />}
           title="No recent activity"
-          description="Activity from scans, bids, and profile updates will appear here."
+          description="Activity from profile updates, imports, and integrations will appear here."
         />
       ) : (
         <ul className="divide-y divide-[var(--color-border-subtle)]">

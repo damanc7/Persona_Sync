@@ -6,6 +6,7 @@ import { mapHandlers } from './handlers/map'
 import { collaboratorHandlers } from './handlers/collaborators'
 import { marketplaceHandlers } from './handlers/marketplace'
 import { dashboardHandlers } from './handlers/dashboard'
+import { perceptionHandlers } from './handlers/perceptions'
 
 export const worker = setupWorker(
   ...healthHandlers,
@@ -15,4 +16,5 @@ export const worker = setupWorker(
   ...collaboratorHandlers,
   ...marketplaceHandlers,
   ...dashboardHandlers,
+  ...perceptionHandlers,
 )

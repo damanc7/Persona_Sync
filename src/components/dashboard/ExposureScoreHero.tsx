@@ -8,15 +8,15 @@ interface ExposureScoreHeroProps {
 }
 
 function getScoreColor(score: number): string {
-  if (score <= 33) return '#10b981' // green
-  if (score <= 66) return '#f59e0b' // amber
-  return '#ef4444' // red
+  if (score >= 75) return '#10b981' // green — strong profile
+  if (score >= 40) return '#f59e0b' // amber — growing
+  return '#94a3b8' // muted — getting started
 }
 
 function getScoreLabel(score: number): string {
-  if (score <= 33) return 'Low Exposure'
-  if (score <= 66) return 'Moderate Exposure'
-  return 'High Exposure'
+  if (score >= 75) return 'Strong Profile'
+  if (score >= 40) return 'Growing Profile'
+  return 'Getting Started'
 }
 
 function ScoreArc({ score, animated }: { score: number; animated: boolean }) {
@@ -55,7 +55,7 @@ function ScoreArc({ score, animated }: { score: number; animated: boolean }) {
       <path
         d={arcPath(startAngle, endAngle)}
         fill="none"
-        stroke="rgba(255,255,255,0.08)"
+        stroke="var(--color-track-bg)"
         strokeWidth={strokeWidth}
         strokeLinecap="round"
       />
@@ -137,7 +137,7 @@ export function ExposureScoreHero({ score, loading }: ExposureScoreHeroProps) {
       >
         <p className="text-base font-semibold" style={{ color }}>{label}</p>
         <p className="text-sm text-[var(--color-text-secondary)] mt-1 max-w-xs">
-          Your digital exposure score reflects how much of your personal data is publicly accessible across tracked sources.
+          Your profile completeness score. The more Claude Code knows about your preferences, the better it can assist you.
         </p>
       </motion.div>
     </Card>

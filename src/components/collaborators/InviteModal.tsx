@@ -1,10 +1,7 @@
 import { useState } from 'react'
-import * as Select from '@radix-ui/react-select'
-import { ChevronDown, Check } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
 import { useInviteCollaborator } from '@/hooks/useCollaborators'
-import { cn } from '@/lib/utils'
 
 interface InviteModalProps {
   open: boolean
@@ -12,20 +9,20 @@ interface InviteModalProps {
   onSuccess?: () => void
 }
 
-const roles = [
-  { value: 'editor', label: 'Editor', description: 'Can view and edit data' },
-  { value: 'viewer', label: 'Viewer', description: 'Can view data only' },
-]
-
 export function InviteModal({ open, onOpenChange, onSuccess }: InviteModalProps) {
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
-  const [role, setRole] = useState('viewer')
+  const [tagline, setTagline] = useState('')
   const [error, setError] = useState('')
   const invite = useInviteCollaborator()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    if (!name.trim()) {
+      setError('Name is required')
+      return
+    }
     if (!email.trim()) {
       setError('Email is required')
       return
@@ -35,69 +32,59 @@ export function InviteModal({ open, onOpenChange, onSuccess }: InviteModalProps)
       return
     }
     try {
-      await invite.mutateAsync({ email, role })
+      await invite.mutateAsync({ email, role: 'editor', name: name.trim(), tagline: tagline.trim() })
+      setName('')
       setEmail('')
-      setRole('viewer')
+      setTagline('')
       onOpenChange(false)
       onSuccess?.()
     } catch {
-      setError('Failed to send invitation. Please try again.')
+      setError('Failed to add profile. Please try again.')
     }
   }
 
+  const inputClass = 'w-full px-3 py-2 rounded-lg bg-[var(--color-overlay-dim)] border border-[var(--color-border-default)] text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-violet)] transition-colors'
+
   return (
-    <Modal open={open} onOpenChange={onOpenChange} title="Invite Collaborator" description="Send an invitation to collaborate on your persona data.">
+    <Modal open={open} onOpenChange={onOpenChange} title="Add a Profile" description="Add a friend or colleague's profile so they can join conversations with their perspective.">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-xs font-medium text-[var(--color-text-secondary)] mb-1.5">
-            Email address
+            Name
+          </label>
+          <input
+            type="text"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            placeholder="e.g. Joe, Harish, Daman"
+            className={inputClass}
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs font-medium text-[var(--color-text-secondary)] mb-1.5">
+            Email
           </label>
           <input
             type="email"
             value={email}
             onChange={e => setEmail(e.target.value)}
             placeholder="colleague@example.com"
-            className="w-full px-3 py-2 rounded-lg bg-white/5 border border-[var(--color-border-default)] text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-violet)] transition-colors"
+            className={inputClass}
           />
         </div>
 
         <div>
           <label className="block text-xs font-medium text-[var(--color-text-secondary)] mb-1.5">
-            Role
+            Tagline / speciality
           </label>
-          <Select.Root value={role} onValueChange={setRole}>
-            <Select.Trigger className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-white/5 border border-[var(--color-border-default)] text-sm text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-violet)]">
-              <Select.Value />
-              <Select.Icon>
-                <ChevronDown className="h-4 w-4 text-[var(--color-text-muted)]" />
-              </Select.Icon>
-            </Select.Trigger>
-            <Select.Portal>
-              <Select.Content
-                className="z-50 w-[var(--radix-select-trigger-width)] overflow-hidden rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-border-default)] shadow-xl shadow-black/40"
-                position="popper"
-                sideOffset={4}
-              >
-                <Select.Viewport className="p-1">
-                  {roles.map(r => (
-                    <Select.Item
-                      key={r.value}
-                      value={r.value}
-                      className={cn(
-                        'flex items-center gap-2 px-3 py-2 rounded-md text-sm cursor-pointer outline-none',
-                        'data-[highlighted]:bg-white/10 text-[var(--color-text-primary)]'
-                      )}
-                    >
-                      <Select.ItemText>{r.label}</Select.ItemText>
-                      <Select.ItemIndicator className="ml-auto">
-                        <Check className="h-3.5 w-3.5 text-violet-400" />
-                      </Select.ItemIndicator>
-                    </Select.Item>
-                  ))}
-                </Select.Viewport>
-              </Select.Content>
-            </Select.Portal>
-          </Select.Root>
+          <input
+            type="text"
+            value={tagline}
+            onChange={e => setTagline(e.target.value)}
+            placeholder="e.g. Backend engineer, Go & Rust, prefers minimal abstractions"
+            className={inputClass}
+          />
         </div>
 
         {error && (
@@ -111,7 +98,7 @@ export function InviteModal({ open, onOpenChange, onSuccess }: InviteModalProps)
             Cancel
           </Button>
           <Button type="submit" size="sm" loading={invite.isPending}>
-            Send Invitation
+            Add Profile
           </Button>
         </div>
       </form>

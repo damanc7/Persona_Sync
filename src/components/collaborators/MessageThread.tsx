@@ -1,13 +1,33 @@
 import { useEffect, useRef } from 'react'
-import { Badge } from '@/components/ui/Badge'
 import { Skeleton } from '@/components/ui/Skeleton'
-import type { Message, Collaborator } from '@/types'
+import type { Message, PersonaProfile } from '@/types'
 
 interface MessageThreadProps {
   messages: Message[]
-  collaborators: Collaborator[]
+  collaborators: PersonaProfile[]
   loading?: boolean
   streamingMessage?: string
+  streamingAuthorId?: string | null
+}
+
+const PERSONA_BADGE_STYLES: Record<string, string> = {
+  joe: 'bg-cyan-500/15 text-cyan-400',
+  harish: 'bg-violet-500/15 text-violet-400',
+  daman: 'bg-amber-500/15 text-amber-400',
+}
+
+const PERSONA_BORDER_STYLES: Record<string, string> = {
+  joe: 'border-cyan-500/20',
+  harish: 'border-violet-500/20',
+  daman: 'border-amber-500/20',
+}
+
+function personaBadgeClass(id: string): string {
+  return PERSONA_BADGE_STYLES[id] ?? 'bg-emerald-500/15 text-emerald-400'
+}
+
+function personaBorderClass(id: string): string {
+  return PERSONA_BORDER_STYLES[id] ?? 'border-emerald-500/20'
 }
 
 function formatRelative(iso: string) {
@@ -45,14 +65,13 @@ function groupByDate(messages: Message[]): Array<{ label: string; messages: Mess
 
 interface MessageBubbleProps {
   msg: Message
-  collaborators: Collaborator[]
+  collaborators: PersonaProfile[]
 }
 
 function MessageBubble({ msg, collaborators }: MessageBubbleProps) {
   const isUser = msg.authorType === 'user'
-  const isLLM = msg.authorType === 'llm'
   const author = collaborators.find(c => c.id === msg.authorId)
-  const authorName = isUser ? 'You' : isLLM ? 'AI Assistant' : (author?.name ?? 'Collaborator')
+  const authorName = isUser ? 'You' : (author?.name ?? 'Unknown')
 
   if (isUser) {
     return (
@@ -65,25 +84,17 @@ function MessageBubble({ msg, collaborators }: MessageBubbleProps) {
     )
   }
 
-  if (isLLM) {
-    return (
-      <div className="flex flex-col items-start gap-1">
-        <div className="flex items-center gap-1.5 mb-0.5">
-          <Badge variant="cyan">AI</Badge>
-          <span className="text-xs text-[var(--color-text-muted)]">{authorName}</span>
-        </div>
-        <div className="max-w-[75%] px-4 py-2.5 rounded-2xl rounded-tl-sm bg-[var(--color-bg-elevated)] border border-cyan-500/20 text-sm text-[var(--color-text-primary)] leading-relaxed">
-          {msg.content}
-        </div>
-        <span className="text-[10px] text-[var(--color-text-muted)] pl-1">{formatRelative(msg.timestamp)}</span>
-      </div>
-    )
-  }
-
   return (
     <div className="flex flex-col items-start gap-1">
-      <span className="text-xs text-[var(--color-text-muted)] pl-1">{authorName}</span>
-      <div className="max-w-[75%] px-4 py-2.5 rounded-2xl rounded-tl-sm bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] text-sm text-[var(--color-text-primary)] leading-relaxed">
+      <div className="flex items-center gap-1.5 mb-0.5">
+        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${personaBadgeClass(msg.authorId)}`}>
+          {authorName}
+        </span>
+        {author?.preferences['editor'] && (
+          <span className="text-[10px] text-[var(--color-text-muted)]">&middot; {author.preferences['editor']}</span>
+        )}
+      </div>
+      <div className={`max-w-[75%] px-4 py-2.5 rounded-2xl rounded-tl-sm bg-[var(--color-bg-elevated)] border ${personaBorderClass(msg.authorId)} text-sm text-[var(--color-text-primary)] leading-relaxed`}>
         {msg.content}
       </div>
       <span className="text-[10px] text-[var(--color-text-muted)] pl-1">{formatRelative(msg.timestamp)}</span>
@@ -91,7 +102,7 @@ function MessageBubble({ msg, collaborators }: MessageBubbleProps) {
   )
 }
 
-export function MessageThread({ messages, collaborators, loading, streamingMessage }: MessageThreadProps) {
+export function MessageThread({ messages, collaborators, loading, streamingMessage, streamingAuthorId }: MessageThreadProps) {
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -111,9 +122,19 @@ export function MessageThread({ messages, collaborators, loading, streamingMessa
   }
 
   const groups = groupByDate(messages)
+  const streamingAuthor = streamingAuthorId ? collaborators.find(c => c.id === streamingAuthorId) : null
 
   return (
     <div className="flex-1 overflow-y-auto p-4 space-y-6">
+      {messages.length === 0 && !streamingMessage && (
+        <div className="flex-1 flex flex-col items-center justify-center py-16 text-center">
+          <p className="text-sm font-medium text-[var(--color-text-secondary)] mb-1">Ask a question to start the conversation</p>
+          <p className="text-xs text-[var(--color-text-muted)] max-w-sm">
+            Each selected profile will respond from their own perspective, based on their preferences and experience.
+          </p>
+        </div>
+      )}
+
       {groups.map(group => (
         <div key={group.label}>
           <div className="flex items-center gap-3 mb-4">
@@ -129,15 +150,17 @@ export function MessageThread({ messages, collaborators, loading, streamingMessa
         </div>
       ))}
 
-      {streamingMessage && (
+      {streamingMessage && streamingAuthor && (
         <div className="flex flex-col items-start gap-1">
           <div className="flex items-center gap-1.5 mb-0.5">
-            <Badge variant="cyan">AI</Badge>
-            <span className="text-xs text-[var(--color-text-muted)]">AI Assistant</span>
+            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${personaBadgeClass(streamingAuthor.id)}`}>
+              {streamingAuthor.name}
+            </span>
+            <span className="text-[10px] text-[var(--color-text-muted)]">typing&hellip;</span>
           </div>
-          <div className="max-w-[75%] px-4 py-2.5 rounded-2xl rounded-tl-sm bg-[var(--color-bg-elevated)] border border-cyan-500/20 text-sm text-[var(--color-text-primary)] leading-relaxed">
+          <div className={`max-w-[75%] px-4 py-2.5 rounded-2xl rounded-tl-sm bg-[var(--color-bg-elevated)] border ${personaBorderClass(streamingAuthor.id)} text-sm text-[var(--color-text-primary)] leading-relaxed`}>
             {streamingMessage}
-            <span className="inline-block w-1.5 h-3.5 bg-cyan-400 ml-0.5 animate-pulse rounded-sm" />
+            <span className="inline-block w-1.5 h-3.5 bg-violet-400 ml-0.5 animate-pulse rounded-sm" />
           </div>
         </div>
       )}

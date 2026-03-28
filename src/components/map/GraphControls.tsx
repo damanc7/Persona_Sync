@@ -61,7 +61,7 @@ export function GraphControls({ graphRef, activeFilters, onToggleFilter, allCate
                 'text-xs rounded-md px-2 py-1 text-left transition-colors',
                 activeFilters.includes(cat)
                   ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
-                  : 'text-[var(--color-text-muted)] hover:bg-white/8 border border-transparent'
+                  : 'text-[var(--color-text-muted)] hover:bg-[var(--color-overlay-dim)] border border-transparent'
               )}
             >
               {cat}

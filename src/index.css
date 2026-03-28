@@ -1,24 +1,49 @@
 @import "tailwindcss";
 
 @theme {
+  --color-accent-violet: #7c3aed;
+  --color-accent-violet-bright: #8b5cf6;
+  --color-accent-cyan: #06b6d4;
+  --color-accent-cyan-bright: #22d3ee;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --font-ui: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+:root {
+  --color-bg-base: #f8fafc;
+  --color-bg-surface: #ffffff;
+  --color-bg-elevated: #f1f5f9;
+  --color-bg-glass: rgba(0,0,0,0.03);
+  --color-border-subtle: rgba(0,0,0,0.08);
+  --color-border-default: rgba(0,0,0,0.12);
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-muted: #94a3b8;
+  --color-graph-bg: #f1f5f9;
+  --color-link-default: rgba(0,0,0,0.25);
+  --color-link-dim: rgba(0,0,0,0.12);
+  --color-overlay-dim: rgba(0,0,0,0.06);
+  --color-track-bg: rgba(0,0,0,0.08);
+}
+
+:root.dark {
   --color-bg-base: #0a0a0f;
   --color-bg-surface: #12121a;
   --color-bg-elevated: #1a1a28;
   --color-bg-glass: rgba(255,255,255,0.04);
   --color-border-subtle: rgba(255,255,255,0.08);
   --color-border-default: rgba(255,255,255,0.12);
-  --color-accent-violet: #7c3aed;
-  --color-accent-violet-bright: #8b5cf6;
-  --color-accent-cyan: #06b6d4;
-  --color-accent-cyan-bright: #22d3ee;
   --color-text-primary: #f1f5f9;
   --color-text-secondary: #94a3b8;
   --color-text-muted: #475569;
-  --color-success: #10b981;
-  --color-warning: #f59e0b;
-  --color-error: #ef4444;
-  --font-ui: 'Inter', sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --color-graph-bg: #0a0a0f;
+  --color-link-default: rgba(255,255,255,0.4);
+  --color-link-dim: rgba(255,255,255,0.2);
+  --color-overlay-dim: rgba(255,255,255,0.06);
+  --color-track-bg: rgba(255,255,255,0.08);
 }
 
 * {

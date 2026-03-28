@@ -1,13 +1,15 @@
 import { NavLink } from 'react-router-dom'
 import { LayoutDashboard, User, Database, Map, Users, ShoppingBag, ShieldCheck } from 'lucide-react'
+import { LayoutDashboard, User, Database, Map, MessageSquare, ShoppingBag, FlipHorizontal2, ShieldCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const navItems = [
-  { to: '/', icon: LayoutDashboard, label: 'Home' },
+  { to: '/', icon: LayoutDashboard, label: 'Overview' },
   { to: '/profile', icon: User, label: 'Profile' },
   { to: '/scraped', icon: Database, label: 'Data' },
   { to: '/map', icon: Map, label: 'Map' },
-  { to: '/collaborators', icon: Users, label: 'Team' },
+  { to: '/reverse', icon: FlipHorizontal2, label: 'Reverse' },
+  { to: '/collaborators', icon: MessageSquare, label: 'Chat' },
   { to: '/marketplace', icon: ShoppingBag, label: 'Market' },
   { to: '/data-rights', icon: ShieldCheck, label: 'Rights' },
 ]

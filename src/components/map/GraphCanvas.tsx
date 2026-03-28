@@ -15,7 +15,7 @@ type NodeType = GraphNode['type']
 const NODE_COLORS: Record<NodeType, string> = {
   self: '#7c3aed',
   platform: '#06b6d4',
-  broker: '#ef4444',
+  broker: '#8b5cf6',
   partner: '#10b981',
 }
 
@@ -23,11 +23,16 @@ function nodeSizeFromExposure(exposure: number): number {
   return 3 + exposure * 8
 }
 
+function isDarkMode(): boolean {
+  return document.documentElement.classList.contains('dark')
+}
+
 function linkColorFromType(type: string): string {
+  const dark = isDarkMode()
   switch (type) {
-    case 'direct': return 'rgba(255,255,255,0.4)'
-    case 'indirect': return 'rgba(255,255,255,0.2)'
-    default: return 'rgba(255,255,255,0.1)'
+    case 'direct': return dark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.25)'
+    case 'indirect': return dark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.12)'
+    default: return dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)'
   }
 }
 
@@ -181,13 +186,13 @@ export function GraphCanvas({ nodes, links, filters, graphRef: externalRef }: Gr
   }, [])
 
   return (
-    <div ref={containerRef} className="w-full h-full relative overflow-hidden" style={{ background: '#0a0a0f' }}>
+    <div ref={containerRef} className="w-full h-full relative overflow-hidden" style={{ background: 'var(--color-graph-bg)' }}>
       <ForceGraph2D
         ref={graphRef}
         width={dimensions.width}
         height={dimensions.height}
         graphData={graphData}
-        backgroundColor="#0a0a0f"
+        backgroundColor="rgba(0,0,0,0)"
         nodeColor={nodeColor}
         nodeVal={nodeVal}
         nodeRelSize={4}

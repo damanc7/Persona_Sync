@@ -200,7 +200,7 @@ export function Profile() {
           </div>
           <Progress.Root
             value={completion}
-            className="relative overflow-hidden rounded-full h-2 bg-white/8 w-full"
+            className="relative overflow-hidden rounded-full h-2 bg-[var(--color-track-bg)] w-full"
           >
             <motion.div
               className="h-full rounded-full bg-gradient-to-r from-[var(--color-accent-violet)] to-[var(--color-accent-violet-bright)]"
@@ -228,7 +228,7 @@ export function Profile() {
                   className={`w-full text-left rounded-lg px-3 py-2 text-sm transition-colors ${
                     activeSection === section.id
                       ? 'bg-[var(--color-accent-violet)]/15 text-[var(--color-accent-violet-bright)] font-medium'
-                      : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-white/5'
+                      : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-overlay-dim)]'
                   }`}
                 >
                   {section.title}

@@ -7,6 +7,7 @@ import { DataMap } from '@/pages/DataMap'
 import { Collaborators } from '@/pages/Collaborators'
 import { Marketplace } from '@/pages/Marketplace'
 import { DataRights } from '@/pages/DataRights'
+import { ReverseAlgorithm } from '@/pages/ReverseAlgorithm'
 
 export const router = createBrowserRouter([
   {
@@ -17,6 +18,7 @@ export const router = createBrowserRouter([
       { path: 'profile', element: <Profile /> },
       { path: 'scraped', element: <ScrapedData /> },
       { path: 'map', element: <DataMap /> },
+      { path: 'reverse', element: <ReverseAlgorithm /> },
       { path: 'collaborators', element: <Collaborators /> },
       { path: 'marketplace', element: <Marketplace /> },
       { path: 'data-rights', element: <DataRights /> },

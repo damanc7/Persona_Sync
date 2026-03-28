@@ -9,17 +9,17 @@ interface NodeTooltipProps {
   connectedCount: number
 }
 
-function exposureColor(exposure: number): string {
-  if (exposure >= 0.7) return 'text-red-400'
+function coverageColor(exposure: number): string {
+  if (exposure >= 0.7) return 'text-emerald-400'
   if (exposure >= 0.4) return 'text-amber-400'
-  return 'text-emerald-400'
+  return 'text-[var(--color-text-muted)]'
 }
 
 function typeBadgeVariant(type: GraphNode['type']): 'violet' | 'cyan' | 'error' | 'success' {
   switch (type) {
     case 'self': return 'violet'
     case 'platform': return 'cyan'
-    case 'broker': return 'error'
+    case 'broker': return 'violet'
     case 'partner': return 'success'
   }
 }
@@ -38,8 +38,8 @@ export function NodeTooltip({ node, x, y, connectedCount }: NodeTooltipProps) {
       </div>
       <div className="space-y-1 text-[var(--color-text-secondary)]">
         <div className="flex justify-between">
-          <span>Exposure</span>
-          <span className={`font-mono font-medium ${exposureColor(node.exposure)}`}>
+          <span>Coverage</span>
+          <span className={`font-mono font-medium ${coverageColor(node.exposure)}`}>
             {Math.round(node.exposure * 100)}%
           </span>
         </div>

@@ -53,19 +53,23 @@ export interface GraphLink {
   type: string
 }
 
-export interface Collaborator {
+export interface PersonaProfile {
   id: string
   name: string
   email: string
   role: 'owner' | 'editor' | 'viewer'
   avatarUrl?: string
   status: 'active' | 'invited'
+  tagline: string
+  preferences: Record<string, string>
 }
+
+export type Collaborator = PersonaProfile
 
 export interface Message {
   id: string
   authorId: string
-  authorType: 'user' | 'collaborator' | 'llm'
+  authorType: 'user' | 'persona' | 'llm'
   content: string
   timestamp: string
   topic?: string
@@ -113,4 +117,63 @@ export interface DashboardStats {
   activeBids: number
   recentActivity: ActivityItem[]
   topSources: DataSource[]
+}
+
+// ─── Reverse Algorithm Feature ──────────────────────────────────────────────
+
+export type AlgorithmicTraitCategory =
+  | 'Professional'
+  | 'Consumer'
+  | 'Creative'
+  | 'Behavioral'
+  | 'Demographic'
+  | 'Psychographic'
+
+export interface AlgorithmicTrait {
+  id: string
+  label: string
+  category: AlgorithmicTraitCategory
+  weight: number        // 0–1, drives badge visual emphasis
+}
+
+export type ConfidenceLevel = 'very_high' | 'high' | 'medium' | 'low'
+
+export type PlatformPerceptionCategory =
+  | 'Professional'
+  | 'Consumer'
+  | 'Creative'
+  | 'Social'
+  | 'Productivity'
+
+export interface PlatformPerception {
+  platformId: string
+  platformName: string
+  platformIcon: string
+  connected: boolean
+  category: PlatformPerceptionCategory
+  summary: string
+  confidenceLevel: ConfidenceLevel
+  confidenceScore: number               // 0–1
+  exposureScore: number                 // 0–1
+  traits: AlgorithmicTrait[]
+  lastUpdated: string                   // ISO date string
+  dataPoints: number
+  userAccuracyVote: 'agree' | 'disagree' | null
+}
+
+export type AIExportFormatId = 'openai' | 'anthropic' | 'gemini' | 'json' | 'markdown'
+
+export interface AIExportFormat {
+  id: AIExportFormatId
+  label: string
+  description: string
+  icon: string
+  accentColor: string
+}
+
+export interface PerceptionsResponse {
+  perceptions: PlatformPerception[]
+  totalPlatforms: number
+  connectedPlatforms: number
+  lastAnalyzed: string
 }

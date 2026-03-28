@@ -1,13 +1,15 @@
 import { NavLink } from 'react-router-dom'
 import { LayoutDashboard, User, Database, Map, Users, ShoppingBag, ShieldCheck } from 'lucide-react'
+import { LayoutDashboard, User, Database, Map, MessageSquare, ShoppingBag, FlipHorizontal2, ShieldCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const navItems = [
-  { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/profile', icon: User, label: 'Profile' },
-  { to: '/scraped', icon: Database, label: 'Scraped Data' },
-  { to: '/map', icon: Map, label: 'Data Map' },
-  { to: '/collaborators', icon: Users, label: 'Collaborators' },
+  { to: '/', icon: LayoutDashboard, label: 'Overview' },
+  { to: '/profile', icon: User, label: 'Edit Profile' },
+  { to: '/scraped', icon: Database, label: 'Imported Data' },
+  { to: '/map', icon: Map, label: 'Profile Map' },
+  { to: '/reverse', icon: FlipHorizontal2, label: 'Reverse Algorithm' },
+  { to: '/collaborators', icon: MessageSquare, label: 'Conversations' },
   { to: '/marketplace', icon: ShoppingBag, label: 'Marketplace' },
   { to: '/data-rights', icon: ShieldCheck, label: 'Data Rights' },
 ]
@@ -31,7 +33,7 @@ export function Sidebar() {
               'flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors',
               isActive
                 ? 'bg-[var(--color-accent-violet)]/15 text-[var(--color-accent-violet-bright)] font-medium'
-                : 'text-[var(--color-text-secondary)] hover:bg-white/5 hover:text-[var(--color-text-primary)]'
+                : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-overlay-dim)] hover:text-[var(--color-text-primary)]'
             )}
           >
             <Icon className="h-4 w-4 shrink-0" />

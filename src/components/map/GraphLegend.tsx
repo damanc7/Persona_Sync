@@ -8,13 +8,13 @@ interface GraphLegendProps {
 const NODE_TYPES = [
   { type: 'self', label: 'You', color: '#7c3aed' },
   { type: 'platform', label: 'Platform', color: '#06b6d4' },
-  { type: 'broker', label: 'Data Broker', color: '#ef4444' },
-  { type: 'partner', label: 'Partner', color: '#10b981' },
+  { type: 'broker', label: 'Enrichment', color: '#8b5cf6' },
+  { type: 'partner', label: 'Integration', color: '#10b981' },
 ] as const
 
 const LINK_TYPES = [
   { type: 'direct', label: 'Direct', opacity: 'opacity-70' },
-  { type: 'indirect', label: 'Indirect', opacity: 'opacity-40' },
+  { type: 'indirect', label: 'Shared', opacity: 'opacity-40' },
   { type: 'inferred', label: 'Inferred', opacity: 'opacity-20' },
 ] as const
 
@@ -42,7 +42,7 @@ export function GraphLegend({ nodes, links }: GraphLegendProps) {
         <div className="space-y-1.5">
           {LINK_TYPES.map(({ type, label, opacity }) => (
             <div key={type} className="flex items-center gap-2">
-              <span className={`h-px w-6 bg-white flex-shrink-0 ${opacity}`} />
+              <span className={`h-px w-6 bg-[var(--color-text-primary)] flex-shrink-0 ${opacity}`} />
               <span className="text-xs text-[var(--color-text-secondary)]">{label}</span>
             </div>
           ))}
@@ -59,8 +59,8 @@ export function GraphLegend({ nodes, links }: GraphLegendProps) {
           <span className="text-[var(--color-text-primary)] font-mono">{links.length}</span>
         </div>
         <div className="flex justify-between text-xs">
-          <span className="text-[var(--color-text-muted)]">Avg exposure</span>
-          <span className="font-mono text-amber-400">{avgExposure}%</span>
+          <span className="text-[var(--color-text-muted)]">Avg coverage</span>
+          <span className="font-mono text-violet-400">{avgExposure}%</span>
         </div>
       </div>
     </div>
