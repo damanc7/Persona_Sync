@@ -92,7 +92,7 @@ export function CollaboratorList({ collaborators, loading, selectedPersonas, onT
               {c.tagline && (
                 <p className="text-[11px] text-[var(--color-text-muted)] leading-snug mt-0.5">{c.tagline}</p>
               )}
-              {Object.keys(c.preferences).length > 0 && isSelected && (
+              {c.preferences && Object.keys(c.preferences).length > 0 && isSelected && (
                 <div className="flex flex-wrap gap-1 mt-1.5">
                   {Object.entries(c.preferences).slice(0, 3).map(([key, val]) => (
                     <span
