@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, User, Database, Map, Users, ShoppingBag } from 'lucide-react'
+import { LayoutDashboard, User, Database, Map, Users, ShoppingBag, ShieldCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const navItems = [
@@ -9,6 +9,7 @@ const navItems = [
   { to: '/map', icon: Map, label: 'Map' },
   { to: '/collaborators', icon: Users, label: 'Team' },
   { to: '/marketplace', icon: ShoppingBag, label: 'Market' },
+  { to: '/data-rights', icon: ShieldCheck, label: 'Rights' },
 ]
 
 export function BottomNav() {

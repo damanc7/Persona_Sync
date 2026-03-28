@@ -6,6 +6,7 @@ import { ScrapedData } from '@/pages/ScrapedData'
 import { DataMap } from '@/pages/DataMap'
 import { Collaborators } from '@/pages/Collaborators'
 import { Marketplace } from '@/pages/Marketplace'
+import { DataRights } from '@/pages/DataRights'
 
 export const router = createBrowserRouter([
   {
@@ -18,6 +19,7 @@ export const router = createBrowserRouter([
       { path: 'map', element: <DataMap /> },
       { path: 'collaborators', element: <Collaborators /> },
       { path: 'marketplace', element: <Marketplace /> },
+      { path: 'data-rights', element: <DataRights /> },
     ]
   }
 ])

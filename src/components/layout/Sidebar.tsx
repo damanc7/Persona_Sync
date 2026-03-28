@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, User, Database, Map, Users, ShoppingBag } from 'lucide-react'
+import { LayoutDashboard, User, Database, Map, Users, ShoppingBag, ShieldCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const navItems = [
@@ -9,6 +9,7 @@ const navItems = [
   { to: '/map', icon: Map, label: 'Data Map' },
   { to: '/collaborators', icon: Users, label: 'Collaborators' },
   { to: '/marketplace', icon: ShoppingBag, label: 'Marketplace' },
+  { to: '/data-rights', icon: ShieldCheck, label: 'Data Rights' },
 ]
 
 export function Sidebar() {
