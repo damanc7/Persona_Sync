@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/Button'
 import { PlatformIcon } from './PlatformIcon'
 import { TraitBadge } from './TraitBadge'
 import { ConfidenceBar } from './ConfidenceBar'
-import type { PlatformPerception, ConfidenceLevel } from '@/types'
+import type { PlatformPerception } from '@/types'
 
 function getExposureColor(score: number): string {
   if (score >= 0.7) return '#ef4444'
